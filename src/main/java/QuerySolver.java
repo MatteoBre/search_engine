@@ -82,7 +82,7 @@ public class QuerySolver {
 
     private List<DocumentPair> executeQuery(BooleanQuery.Builder query, IndexSearcher isearcher) throws IOException {
         List<DocumentPair> results = new ArrayList<>();
-        ScoreDoc[] hits = isearcher.search(query.build(), 20).scoreDocs;
+        ScoreDoc[] hits = isearcher.search(query.build(), 1400).scoreDocs;
 
         for (int i = 0; i < hits.length; i++)
         {
