@@ -13,10 +13,12 @@ import java.util.List;
 public class QuerySolver {
     private String queriesFileLocation;
     private String indexLocation;
+    private String outputFileName;
 
-    public QuerySolver(String queriesFileLocation, String indexLocation) {
+    public QuerySolver(String queriesFileLocation, String indexLocation, String outputFileName) {
         this.queriesFileLocation = queriesFileLocation;
         this.indexLocation = indexLocation;
+        this.outputFileName = outputFileName;
     }
 
     private List<String> getQueries() throws IOException {
@@ -78,21 +80,20 @@ public class QuerySolver {
         return queries;
     }
 
-    private List<String> executeQuery(BooleanQuery.Builder query, IndexSearcher isearcher) throws IOException {
-        List<String> results = new ArrayList<>();
+    private List<DocumentPair> executeQuery(BooleanQuery.Builder query, IndexSearcher isearcher) throws IOException {
+        List<DocumentPair> results = new ArrayList<>();
         ScoreDoc[] hits = isearcher.search(query.build(), 20).scoreDocs;
 
-        System.out.println("Documents: " + hits.length);
         for (int i = 0; i < hits.length; i++)
         {
-            Document hitDoc = isearcher.doc(hits[i].doc);
-            System.out.println(i + ") " + hitDoc.get("id") + " " + hits[i].score);
+            results.add(new DocumentPair(isearcher.doc(hits[i].doc), hits[i].score));
         }
 
         return results;
     }
 
     public void buildQueriesResults() throws IOException {
+        FileWriter queryResultsWriter = new FileWriter(outputFileName);
         Directory indexDirectory = FSDirectory.open(Paths.get(indexLocation));
 
         DirectoryReader ireader = DirectoryReader.open(indexDirectory);
@@ -101,11 +102,35 @@ public class QuerySolver {
         List<String> queriesText = getQueries();
         List<BooleanQuery.Builder> queries = buildQueries(queriesText);
 
-        for(BooleanQuery.Builder query : queries) {
-            executeQuery(query, isearcher);
+        List<DocumentPair> results;
+        for(int i=0; i<queries.size(); i++) {
+            results = executeQuery(queries.get(i), isearcher);
+
+            for(DocumentPair pair : results) {
+                queryResultsWriter.write((i+1) + " 0 " + pair.getDocument().get("id") + " " + i + " " + pair.getScore());
+            }
         }
 
         ireader.close();
         indexDirectory.close();
+        queryResultsWriter.close();
+    }
+}
+
+class DocumentPair {
+    private Document document;
+    private double score;
+
+    public DocumentPair(Document document, double score) {
+        this.document = document;
+        this.score = score;
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public double getScore() {
+        return score;
     }
 }
