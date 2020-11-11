@@ -1,4 +1,12 @@
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +52,60 @@ public class QuerySolver {
         return queries;
     }
 
+    private BooleanQuery.Builder buildQueryFromQueryText(String queryText) {
+        BooleanQuery.Builder query = new BooleanQuery.Builder();
+        String[] words = queryText.split(" ");
+
+        Query term;
+        for(String word : words) {
+            if(word.equals(""))
+                continue;
+
+            term = new TermQuery(new Term("content", word));
+            query.add(new BooleanClause(term, BooleanClause.Occur.SHOULD));
+        }
+
+        return query;
+    }
+
+    private List<BooleanQuery.Builder> buildQueries(List<String> queriesText) {
+        List<BooleanQuery.Builder> queries = new ArrayList<>();
+
+        for(String queryText : queriesText) {
+            queries.add(buildQueryFromQueryText(queryText));
+        }
+
+        return queries;
+    }
+
+    private List<String> executeQuery(BooleanQuery.Builder query, IndexSearcher isearcher) throws IOException {
+        List<String> results = new ArrayList<>();
+        ScoreDoc[] hits = isearcher.search(query.build(), 20).scoreDocs;
+
+        System.out.println("Documents: " + hits.length);
+        for (int i = 0; i < hits.length; i++)
+        {
+            Document hitDoc = isearcher.doc(hits[i].doc);
+            System.out.println(i + ") " + hitDoc.get("id") + " " + hits[i].score);
+        }
+
+        return results;
+    }
+
     public void buildQueriesResults() throws IOException {
-        List<String> queries = getQueries();
+        Directory indexDirectory = FSDirectory.open(Paths.get(indexLocation));
+
+        DirectoryReader ireader = DirectoryReader.open(indexDirectory);
+        IndexSearcher isearcher = new IndexSearcher(ireader);
+
+        List<String> queriesText = getQueries();
+        List<BooleanQuery.Builder> queries = buildQueries(queriesText);
+
+        for(BooleanQuery.Builder query : queries) {
+            executeQuery(query, isearcher);
+        }
+
+        ireader.close();
+        indexDirectory.close();
     }
 }

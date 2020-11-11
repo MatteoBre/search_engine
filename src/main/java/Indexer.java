@@ -50,7 +50,7 @@ public class Indexer {
         Document currentLuceneDocument;
         for(CranfieldDocument doc : cranfieldDocuments) {
             currentLuceneDocument = new Document();
-            currentLuceneDocument.add(new IntPoint("id", doc.getId()));
+            currentLuceneDocument.add(new StringField("id", ""+doc.getId(), Field.Store.YES));
             currentLuceneDocument.add(new TextField("content", doc.getText(), Field.Store.YES));
             documents.add(currentLuceneDocument);
         }
