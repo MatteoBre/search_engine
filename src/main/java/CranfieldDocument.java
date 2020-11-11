@@ -1,10 +1,12 @@
 public class CranfieldDocument {
+    private int id;
     private String title;
     private String authors;
     private String bibliography;
     private String text;
 
-    public CranfieldDocument(String title, String authors, String bibliography, String text) {
+    public CranfieldDocument(int id, String title, String authors, String bibliography, String text) {
+        this.id = id;
         this.title = title;
         this.authors = authors;
         this.bibliography = bibliography;
@@ -19,6 +21,7 @@ public class CranfieldDocument {
 
         int index = 0;
         String[] lines = documentContent.split("\n");
+        int documentId = Integer.parseInt(lines[0].split(" ")[1]);
 
         while(!lines[index++].startsWith(".T"));
 
@@ -45,10 +48,15 @@ public class CranfieldDocument {
             index++;
         }
 
-        return new CranfieldDocument(title.toString().trim(),
+        return new CranfieldDocument(documentId,
+                title.toString().trim(),
                 authors.toString().trim(),
                 bibliography.toString().trim(),
                 text.toString().trim());
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
