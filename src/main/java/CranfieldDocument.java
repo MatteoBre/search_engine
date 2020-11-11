@@ -49,10 +49,10 @@ public class CranfieldDocument {
         }
 
         return new CranfieldDocument(documentId,
-                title.toString().trim(),
-                authors.toString().trim(),
-                bibliography.toString().trim(),
-                text.toString().trim());
+                Util.sanitize(title.toString()),
+                Util.sanitize(authors.toString()),
+                Util.sanitize(bibliography.toString()),
+                Util.sanitize(text.toString()));
     }
 
     public int getId() {
