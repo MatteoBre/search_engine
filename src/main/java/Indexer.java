@@ -1,6 +1,5 @@
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -12,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+//This class is used to index all the 1400 Cranfield Documents
 public class Indexer {
     private String documentLocation;
     private String indexLocation;
@@ -31,15 +31,21 @@ public class Indexer {
         String currentLine;
         StringBuilder currentDoc = new StringBuilder();
 
+        //While loop that ends when we run out of lines in the Cranfield file
         while((currentLine = reader.readLine()) != null) {
+            //If a line starts with .I, that means that this is the beginning of a document
             if(currentLine.startsWith(".I")) {
+                //Not adding blank documents to the list of docs
                 if(!currentDoc.toString().equals("")) {
+                    //Parsing the content of the document to find a structured document (title, author, etc...)
                     cranfieldDocuments.add(CranfieldDocument.fromString(currentDoc.toString()));
                 }
 
+                //Remove the content of the previous documents, so that I can process the new one
                 currentDoc.setLength(0);
             }
 
+            //Adding a line to the document
             currentDoc.append(currentLine).append("\n");
         }
 
@@ -49,6 +55,7 @@ public class Indexer {
         }
 
         Document currentLuceneDocument;
+        //For each document, create a Lucene document, and add the relevant features
         for(CranfieldDocument doc : cranfieldDocuments) {
             currentLuceneDocument = new Document();
             currentLuceneDocument.add(new StringField("id", ""+doc.getId(), Field.Store.YES));
@@ -63,15 +70,18 @@ public class Indexer {
     }
 
     public void indexDocument() throws IOException {
-        // Set up an index writer to add process and save documents to the index
+        //Set up an index writer to add process and save documents to the index
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 
+        //Setting the index directory
         Directory indexDirectory = FSDirectory.open(Paths.get(indexLocation));
         IndexWriter iwriter = new IndexWriter(indexDirectory, config);
 
+        //Getting all documents from the Cranfield File
         List<Document> documents = getAllDocumentsFromCranfield();
 
+        //Adding all the documents to the index
         iwriter.addDocuments(documents);
         iwriter.close();
     }

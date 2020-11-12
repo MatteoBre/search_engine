@@ -12,7 +12,9 @@ public class Main {
         Indexer indexer = new Indexer(CRAN_DOC_LOCATION, INDEX_LOCATION);
         QuerySolver querySolver = new QuerySolver(QUERIES_FILE_LOCATION, INDEX_LOCATION, OUTPUT_FILE_NAME);
 
+        //Indexing the documents
         indexer.indexDocument();
+        //Solving the Cranfield queries
         querySolver.buildQueriesResults();
     }
 }
