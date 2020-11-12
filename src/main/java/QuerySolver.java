@@ -6,6 +6,9 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -19,14 +22,20 @@ public class QuerySolver {
     private String indexLocation;
     private String outputFileName;
     private Analyzer analyzer;
+    private Similarity similarity;
     private QueryParser queryParser;
 
-    public QuerySolver(String queriesFileLocation, String indexLocation, String outputFileName) {
+    public QuerySolver(String queriesFileLocation,
+                       String indexLocation,
+                       String outputFileName,
+                       Analyzer analyzer,
+                       Similarity similarity) {
         this.queriesFileLocation = queriesFileLocation;
         this.indexLocation = indexLocation;
         this.outputFileName = outputFileName;
-        this.analyzer = new EnglishAnalyzer();
-        this.queryParser = new MultiFieldQueryParser(new String[]{"title", "author", "bibliography", "content"}, analyzer);
+        this.analyzer = analyzer;
+        this.similarity = similarity;
+        this.queryParser = new MultiFieldQueryParser(new String[]{"title", "author", "bibliography", "content"}, this.analyzer);
     }
 
     //I parse the Cranfield file to get the queries
@@ -88,6 +97,7 @@ public class QuerySolver {
 
         DirectoryReader ireader = DirectoryReader.open(indexDirectory);
         IndexSearcher isearcher = new IndexSearcher(ireader);
+        isearcher.setSimilarity(similarity);
 
         //I parse the file and I get all the queries
         List<String> queriesText = getQueries();

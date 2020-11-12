@@ -17,10 +17,10 @@ public class Indexer {
     private String indexLocation;
     private Analyzer analyzer;
 
-    public Indexer(String documentLocation, String indexLocation) {
+    public Indexer(String documentLocation, String indexLocation, Analyzer analyzer) {
         this.documentLocation = documentLocation;
         this.indexLocation = indexLocation;
-        this.analyzer = new EnglishAnalyzer();
+        this.analyzer = analyzer;
     }
 
     private List<Document> getAllDocumentsFromCranfield() throws IOException {
