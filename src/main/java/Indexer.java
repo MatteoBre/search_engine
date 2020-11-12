@@ -1,4 +1,5 @@
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
@@ -19,7 +20,7 @@ public class Indexer {
     public Indexer(String documentLocation, String indexLocation) {
         this.documentLocation = documentLocation;
         this.indexLocation = indexLocation;
-        this.analyzer = new StandardAnalyzer();
+        this.analyzer = new EnglishAnalyzer();
     }
 
     private List<Document> getAllDocumentsFromCranfield() throws IOException {
@@ -51,6 +52,9 @@ public class Indexer {
         for(CranfieldDocument doc : cranfieldDocuments) {
             currentLuceneDocument = new Document();
             currentLuceneDocument.add(new StringField("id", ""+doc.getId(), Field.Store.YES));
+            currentLuceneDocument.add(new TextField("title", doc.getTitle(), Field.Store.YES));
+            currentLuceneDocument.add(new TextField("author", doc.getAuthors(), Field.Store.YES));
+            currentLuceneDocument.add(new TextField("bibliography", doc.getBibliography(), Field.Store.YES));
             currentLuceneDocument.add(new TextField("content", doc.getText(), Field.Store.YES));
             documents.add(currentLuceneDocument);
         }

@@ -1,3 +1,5 @@
+import org.apache.lucene.queryparser.classic.ParseException;
+
 import java.io.IOException;
 
 public class Main {
@@ -6,7 +8,7 @@ public class Main {
     private static String INDEX_LOCATION = "index";
     private static String OUTPUT_FILE_NAME = "query_results.txt";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParseException {
         Indexer indexer = new Indexer(CRAN_DOC_LOCATION, INDEX_LOCATION);
         QuerySolver querySolver = new QuerySolver(QUERIES_FILE_LOCATION, INDEX_LOCATION, OUTPUT_FILE_NAME);
 
