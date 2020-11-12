@@ -107,7 +107,7 @@ public class QuerySolver {
             results = executeQuery(queries.get(i), isearcher);
 
             for(DocumentPair pair : results) {
-                queryResultsWriter.write((i+1) + " 0 " + pair.getDocument().get("id") + " " +pair.getScore() + "\n");
+                queryResultsWriter.write((i+1) + " 0 " + pair.getDocument().get("id") + " " +pair.getScore() + " Any\n");
             }
         }
 
