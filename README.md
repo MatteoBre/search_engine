@@ -7,7 +7,7 @@ There are a few steps that need to be done to run the program.
 
 You can compile the java code from the main folder using the command:
 ```sh
-npm package
+mvn package
 ```
 
 After compiling it, you can run the code using different types of analyzers and different scores approaches.
