@@ -50,7 +50,7 @@ public class QuerySolver {
             //.I means that we are in the beginning of a new query
             if(currentLine.startsWith(".I")) {
                 if(!currentQuery.toString().equals("")) {
-                    queries.add(Util.sanitize(currentQuery.toString()));
+                    queries.add(currentQuery.toString());
                 }
 
                 //Remove the content of the previous query, so that I can process the new one
@@ -68,7 +68,7 @@ public class QuerySolver {
 
         // Adding the last query
         if(!currentQuery.toString().equals("")) {
-            queries.add(Util.sanitize(currentQuery.toString()));
+            queries.add(currentQuery.toString());
         }
 
         return queries;

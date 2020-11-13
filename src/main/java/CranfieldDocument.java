@@ -61,10 +61,10 @@ public class CranfieldDocument {
 
         //I return the document found when parsing
         return new CranfieldDocument(documentId,
-                Util.sanitize(title.toString()),
-                Util.sanitize(authors.toString()),
-                Util.sanitize(bibliography.toString()),
-                Util.sanitize(text.toString()));
+                title.toString(),
+                authors.toString(),
+                bibliography.toString(),
+                text.toString());
     }
 
     public int getId() {
