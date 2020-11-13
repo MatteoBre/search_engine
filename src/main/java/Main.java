@@ -46,6 +46,8 @@ public class Main {
                     similarity = new BM25Similarity();
             }
         } else {
+            System.out.println("Using English Analyzer");
+            System.out.println("Using BM25 Similarity");
             analyzer = new EnglishAnalyzer();
             similarity = new BM25Similarity();
         }
